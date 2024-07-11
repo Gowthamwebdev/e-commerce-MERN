@@ -13,8 +13,8 @@ app.use("/user/", UserRoutes);
 mongoose.connect(DB).then(() => {
   console.log("Connected to MongoDB!");
 });
-// dbConn();
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
+  dbConn();
   // Connect to MongoDB database
 });

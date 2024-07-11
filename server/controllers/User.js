@@ -1,7 +1,8 @@
 import { User } from "../models/UserModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { ACTIVATION_SECRET } from "../config.js";
+import { ACTIVATION_SECRET, JWT_SECRET } from "../config.js";
+import { response } from "express";
 // import sendMail from '../middleware/sendMail.js'; // Uncomment if you have this function
 
 export const registerUser = async (req, res) => {
@@ -35,9 +36,9 @@ export const registerUser = async (req, res) => {
     // const message = `Please verify your mail with the following OTP: ${otp}`;
     // await sendMail(email, 'Welcome to Shopzee', message);
 
-    res.status(200).json({ message: "OTP sent successfully", activationToken });
+    return res.status(200).json({ message: "OTP sent successfully", activationToken });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -60,8 +61,57 @@ export const verifyUser = async (req, res) => {
       password: verify.hashedPassword,
     });
 
-    res.status(200).json({ message: "Registration successful" });
+    return res.status(200).json({ message: "Registration successful" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// login user
+
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invaild Credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invaild Credentials" });
+    }
+
+    // Generate signed Token...
+    const token = jwt.sign(
+      { _id: user.id },
+      JWT_SECRET,
+      { expiresIn: "15d" }
+    );
+
+    //Exclude password field
+    const{password:userPassword, ...userDetails} = user.toObject();
+
+    return res.status(200).json({message:"Welcome "+user.name,
+      token,
+      userDetails
+    })
+
+
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// user profile
+
+export const myProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    return res.status(200).json({ user });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };
