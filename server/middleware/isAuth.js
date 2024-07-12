@@ -10,9 +10,13 @@ export const authenticateUser = async (req, res, next) => {
     }
     //Decode JWT signed
     const decoded = jwt.verify(token, JWT_SECRET); 
-    req.user = await User.findById(decoded._id);
+    const user = await User.findById(decoded._id);
     next();
-    
+
+    if (!user) {
+      return res.status(401).json({ message: 'Authentication failed: user not found' });
+    }
+
     req.user = user;
     next();
   } catch (error) {
