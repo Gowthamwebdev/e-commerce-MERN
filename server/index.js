@@ -10,6 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+//Middle Wares
+app.use("/uploads",express.static("uploads"));
+
 app.use("/user/", UserRoutes);
 app.use("/product/", productRoutes);
 mongoose.connect(DB).then(() => {

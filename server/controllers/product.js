@@ -6,9 +6,10 @@ export const createProduct = async (req, res) =>{
     try {
         // Check user role
 
-        if(req.user.role != "admin"){
-            return res.status(403).json({ message: 'Unauthorized Access' });
-        }
+        // if(req.user.role != "admin"){
+        //     return res.status(403).json({ message: 'Unauthorized Access' });
+        // }
+        console.log(req.file);
         const {title, description, category, price, stock} = req.body;
         const image = req.file;
 

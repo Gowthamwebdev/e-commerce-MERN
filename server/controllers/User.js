@@ -6,7 +6,7 @@ import { ACTIVATION_SECRET, JWT_SECRET } from "../config.js";
 // Register User
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Email verification
     let user = await User.findOne({ email });
@@ -55,6 +55,7 @@ export const verifyUser = async (req, res) => {
       name: verify.name,
       email: verify.email,
       password: verify.hashedPassword,
+      role: verify.role
     });
 
     res.status(200).json({ message: "Registration successful" });
