@@ -15,9 +15,9 @@ app.use("/uploads",express.static("uploads"));
 
 app.use("/user/", UserRoutes);
 app.use("/product/", productRoutes);
-mongoose.connect(DB).then(() => {
-  console.log("Connected to MongoDB!");
-});
+// mongoose.connect(DB).then(() => {
+//   console.log("Connected to MongoDB!");
+// });
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
   dbConn();
